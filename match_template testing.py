@@ -1,17 +1,18 @@
 import numpy as np
 from matplotlib import pyplot, image
 
-from skimage import data
 from skimage.feature import match_template
 from skimage.color import rgb2gray
 
 from random import randint
 
 
+"""
+http://devdoc.net/python/scikit-image-doc-0.13.1/auto_examples/features_detection/plot_template.html
+"""
 
 
-
-def luma_pattern_matching(image_dir, pattern_name, image_name="", _type="normal"):
+def pattern_matching(image_dir, pattern_name, image_name="", _type="normal"):
 
     if _type == "normal":
         image_name = image_name
@@ -24,7 +25,7 @@ def luma_pattern_matching(image_dir, pattern_name, image_name="", _type="normal"
     elif _type == "input":
         image_name = str(
             input("Entrez le nom de l'image (si autre que .jpg, préciser l'extension) :\n> "))
-        if len(image_name.split('.'))==1:
+        if len(image_name.split('.')) == 1:
             image_name = f"{image_name}.jpg"
 
     my_image_rgb = image.imread(f"{image_dir}/{image_name}")
@@ -42,18 +43,20 @@ def luma_pattern_matching(image_dir, pattern_name, image_name="", _type="normal"
     # Pour trouver les coordonnées où le pattern a été trouvé
     # np.argmax renvoie l'indice (dans l'array applati en 1D) où se trouve le (premier) maximum
     # np.unravel_index permet, à partir de l'indice dans l'array applati en 1D, de retrouver l'indice dans l'array en dimension normale
-    ij = np.unravel_index(np.argmax(result), result.shape)
-    x, y = ij[::-1]  # ::-1 pour renverser, ij = (col,ligne)
+    my_tuple = np.unravel_index(np.argmax(result), result.shape)
+    x, y = my_tuple[::-1]  # ::-1 pour renverser, ij = (col,ligne)
 
     # result[y,x] est le coefficient de corrélation maximum trouvé
     my_max = result[y, x]
 
     if my_max > 0.4:
-        print(f"Le pattern a été trouvé, avec un coefficient maximum : {my_max}")
+        print(
+            f"Le pattern a été trouvé, avec un coefficient maximum : {my_max}")
         my_color = 'r'
     else:
-        print(f"Le pattern n'a pas été trouvé, avec un coefficient maximum : {my_max}")
-        my_color = 'y'
+        print(
+            f"Le pattern n'a pas été trouvé, avec un coefficient maximum : {my_max}")
+        my_color = 'r'
 
     fig = pyplot.figure(figsize=(8, 3))
     ax1 = pyplot.subplot(1, 3, 1)
@@ -76,18 +79,22 @@ def luma_pattern_matching(image_dir, pattern_name, image_name="", _type="normal"
 
     ax3.imshow(result)
     ax3.set_axis_off()
-    ax3.set_title("Résultat")
+    if my_max > 0.4:
+        ax3.set_title("Pattern trouvé")
+    else:
+        ax3.set_title("Pattern non trouvé")
     ax3.autoscale(False)
     rectangle2 = pyplot.Rectangle(
         (x, y), width_pattern, height_pattern, edgecolor=my_color, facecolor="none")
     ax3.add_patch(rectangle2)
-    ax3.plot(x, y, 'o', markeredgecolor='b',
+    ax3.plot(x, y, 'o', markeredgecolor='r',
              markerfacecolor="none", markersize=10)
     pyplot.show()
 
 
 if __name__ == "__main__":
-    image_dir = "C:/Users/Utilisateur/Desktop/Python/-- GITKRAKEN/Some image template matching/images"
+    image_dir = "C:/Users/Utilisateur/Desktop/Python/-- GITKRAKEN/Something template matching/images"
     pattern_name = "luma_pattern.jpg"
 
-    luma_pattern_matching(image_dir = image_dir, pattern_name=pattern_name, _type="input")
+    pattern_matching(image_dir=image_dir,
+                     pattern_name=pattern_name, _type="input")
