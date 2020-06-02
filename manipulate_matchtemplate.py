@@ -9,6 +9,37 @@ http://devdoc.net/python/scikit-image-doc-0.13.1/auto_examples/features_detectio
 """
 
 
+def pattern_matching_maxcoeff(searchimage, patternimage):
+    """
+    Effectue un pattern_matching avec affichage matplotlib
+
+    searchimage : PIL image
+    patternimage : PIL image
+    """
+
+    pix = np.array(searchimage, dtype=np.uint8)
+    # On met les images en gray pour éviter les problèmes de trop grosses images
+    my_image = rgb2gray(pix)
+
+    pix = np.array(patternimage, dtype=np.uint8)
+    my_pattern_image = rgb2gray(pix)
+
+    # Result renvoie une image avec des coefficients de corrélation en guise de couleur
+    result = match_template(image=my_image, template=my_pattern_image)
+
+    # Pour trouver les coordonnées où le pattern a été trouvé
+    # np.argmax renvoie l'indice (dans l'array applati en 1D) où se trouve le (premier) maximum
+    # np.unravel_index permet, à partir de l'indice dans l'array applati en 1D, de retrouver l'indice dans l'array en dimension normale
+    my_tuple = np.unravel_index(np.argmax(result), result.shape)
+    x, y = my_tuple[::-1]  # ::-1 pour renverser, ij = (col,ligne)
+
+    # result[y,x] est le coefficient de corrélation maximum trouvé
+    my_max = result[y, x]
+
+    return(my_max)
+
+
+
 def pattern_matching_withplot(searchimage, patternimage):
     """
     Effectue un pattern_matching avec affichage matplotlib
